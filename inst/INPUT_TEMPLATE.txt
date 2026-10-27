@@ -1,0 +1,65 @@
+library(devtools)
+load_all("C:/Rpkgs/tailcdf")
+
+# ----------------------------
+# User knobs
+# ----------------------------
+
+# Candidate distribution families.
+# Defaults: lognormal, gamma, Weibull, chi-square, and F.
+families <- c("lnorm", "gamma", "weibull", "chisq", "f")
+
+# Advanced: adding another distribution family
+# If your data are known to follow a distribution not listed above, add its p/d/q
+# functions and parameter transformation inside make_specs() in R/tailfit.R, then
+# include the new family name in the families vector above. The required pieces are:
+#   pfun = cumulative distribution function
+#   dfun = density function
+#   qfun = quantile function
+#   theta_to_par = transformation from optimizer scale to distribution parameters
+#   start = initial parameter guess on optimizer scale
+
+# User adjustable bound width multiplier k.
+# Standard bound width: % of measured spacing-log noise
+# Use smaller/larger values only if intentionally testing narrower/wider bounds
+# 1.0 = standard bound using 100% of the measured MLE noise.
+# <1.0 = tighter bounds, lower inclusion rate.
+# >1.0 = wider bounds, higher inclusion rate.
+bound_width <- 1.0
+
+# User adjustable reporting targets for time-to-completeness.
+# These are fractions of the estimated total expected events, not percentages of observed events.
+# 0.60 = time to reach 60% of total expected events
+# 0.70 = time to reach 70% of total expected events etc.
+# Values must be between 0 and 1.
+time_to_reach_pct <- c(0.6, 0.7, 0.8, 0.9)
+
+
+# ----------------------------
+# Data
+# ----------------------------
+x <- c(
+0.1, 0.2, 0.3...PLACE YOUR DATA HERE 
+)
+
+x <- sort(x)
+
+# ----------------------------
+# Run MLE fit
+# ----------------------------
+res <- tailfit(
+  x,
+  dists = families,
+  envelope_expansion = bound_width,
+  pcts = time_to_reach_pct
+)
+
+# ----------------------------
+# Results
+# ----------------------------
+print(res)
+
+# ----------------------------
+# Plot fitted cumulative distribution with bounds
+# ----------------------------
+plot(res)
